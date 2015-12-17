@@ -14,7 +14,11 @@ class CalculatorController < ApplicationController
 			@result = a * b
 		elsif params[:op] === 'div'
 			@result = a / b
-		end 
+		end
+		@result = @result.round(4)
+		if /e/ =~ @result.to_s
+			@result = '%.4e' % @result
+		end
 
 		if !@result.nil?
 			if params[:output] === 'json'
@@ -43,6 +47,8 @@ class CalculatorController < ApplicationController
 				bad_request "operand A not a number"
 			elsif !(nb_regex =~ params[:B])
 				bad_request "operand B not a number"
+			elsif params[:op] === 'div' && /^0+\.*0*$/ =~ params[:B]
+				bad_request "division by zero"
 			end
 		end
 

@@ -49,7 +49,7 @@ class CalculatorControllerTest < ActionController::TestCase
 
 	test "should accept big numbers" do
 	  get(:do_the_maths, {A: "111111111111111111111111111111111111111111111111111111111", B: "2", op: "add"})
-	  assert_equal "111111111111111111111111111111111111111111111111111111113", @response.body
+	  assert_equal "1.1111e+56", @response.body
 	  assert_response 200
 	end
 
@@ -77,10 +77,16 @@ class CalculatorControllerTest < ActionController::TestCase
 	  assert_response 400
 	end
 
-	test "divide by zero" do
+	test "divide by zero (integer)" do
 	  get(:do_the_maths, {A: "5", B: "0", op: "div"})
-	  assert_equal "Infinity", @response.body
-	  assert_response 200
+	  assert_equal "division by zero", @response.body
+	  assert_response 400
+	end
+
+	test "divide by zero (float)" do
+	  get(:do_the_maths, {A: "5", B: "0.0000", op: "div"})
+	  assert_equal "division by zero", @response.body
+	  assert_response 400
 	end
 
 	test "operand A should represent a number" do
